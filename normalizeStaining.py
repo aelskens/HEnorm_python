@@ -78,16 +78,16 @@ def normalizeStaining(img, saveFile=None, Io=240, alpha=1, beta=0.15):
     
     # recreate the image using reference mixing matrix
     Inorm = np.multiply(Io, np.exp(-HERef.dot(C2)))
-    Inorm[Inorm>255] = 254
+    np.clip(Inorm, a_min=0, a_max=254, out=Inorm)
     Inorm = np.reshape(Inorm.T, (h, w, 3)).astype(np.uint8)  
     
     # unmix hematoxylin and eosin
     H = np.multiply(Io, np.exp(np.expand_dims(-HERef[:,0], axis=1).dot(np.expand_dims(C2[0,:], axis=0))))
-    H[H>255] = 254
+    np.clip(H, a_min=0, a_max=254, out=H)
     H = np.reshape(H.T, (h, w, 3)).astype(np.uint8)
     
     E = np.multiply(Io, np.exp(np.expand_dims(-HERef[:,1], axis=1).dot(np.expand_dims(C2[1,:], axis=0))))
-    E[E>255] = 254
+    np.clip(E, a_min=0, a_max=254, out=E)
     E = np.reshape(E.T, (h, w, 3)).astype(np.uint8)
     
     if saveFile is not None:
