@@ -1,0 +1,7 @@
+imgs/
+
+#VS Code
+.vscode/
+
+# macOS
+**/.DS_store

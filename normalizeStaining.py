@@ -2,8 +2,14 @@ import argparse
 import numpy as np
 from PIL import Image
 
+def encoding_format(eF: str = 'uint8'):
+    if eF == 'uint8':
+        return np.uint8
+    else:
+        return np.float32
 
-def normalizeStaining(img, saveFile=None, Io=240, alpha=1, beta=0.15):
+
+def normalizeStaining(img: np.array, saveFile: str = None, Io: int = 240, alpha: int = 1, beta: float = 0.15, encodingFormat: str = 'uint8'):
     ''' Normalize staining appearence of H&E stained images
     
     Example use:
@@ -84,11 +90,11 @@ def normalizeStaining(img, saveFile=None, Io=240, alpha=1, beta=0.15):
     # unmix hematoxylin and eosin
     H = np.multiply(Io, np.exp(np.expand_dims(-HERef[:,0], axis=1).dot(np.expand_dims(C2[0,:], axis=0))))
     np.clip(H, a_min=0, a_max=254, out=H)
-    H = np.reshape(H.T, (h, w, 3)).astype(np.uint8)
+    H = np.reshape(H.T, (h, w, 3)).astype(encoding_format(encodingFormat))
     
     E = np.multiply(Io, np.exp(np.expand_dims(-HERef[:,1], axis=1).dot(np.expand_dims(C2[1,:], axis=0))))
     np.clip(E, a_min=0, a_max=254, out=E)
-    E = np.reshape(E.T, (h, w, 3)).astype(np.uint8)
+    E = np.reshape(E.T, (h, w, 3)).astype(encoding_format(encodingFormat))
     
     if saveFile is not None:
         Image.fromarray(Inorm).save(saveFile+'.png')
@@ -106,6 +112,7 @@ if __name__=='__main__':
     parser.add_argument('--Io', type=int, default=240)
     parser.add_argument('--alpha', type=float, default=1)
     parser.add_argument('--beta', type=float, default=0.15)
+    parser.add_argument('--encodingFormat', type=str, default='uint8')
     args = parser.parse_args()
     
     img = np.array(Image.open(args.imageFile))
@@ -114,4 +121,5 @@ if __name__=='__main__':
                       saveFile = args.saveFile,
                       Io = args.Io,
                       alpha = args.alpha,
-                      beta = args.beta)
+                      beta = args.beta,
+                      encodingFormat = args.encodingFormat)
